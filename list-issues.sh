@@ -34,7 +34,7 @@ function ls_issues() {
 		echo "$row" | jq -r "\":$2: [\(.key)] \(.fields.summary) (\(.duedate)) | href=https://${JIRA_NAMESPACE}.atlassian.net/browse/\(.key)\""
 
 		echo "Backlog,Selected for Development,In Progress,Done," | while read -d, status; do
-			echo "--Move to $status | bash=$HOME/.bitbar-jira.sh param1=$JIRA_NAMESPACE param2=`echo "$row" | jq -r .key` param3=$JIRA_USERNAME param4=$JIRA_API_KEY param5='$status' terminal=true"
+			echo "--Move to $status | bash=$HOME/.bitbar-jira.sh param1=$JIRA_NAMESPACE param2=`echo "$row" | jq -r .key` param3=$JIRA_USERNAME param4=$JIRA_API_KEY param5='$status' terminal=false"
 		done
 	done
 }
