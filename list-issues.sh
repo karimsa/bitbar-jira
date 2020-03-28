@@ -44,6 +44,8 @@ cat > ~/.bitbar-jira.sh << _EOF
 set -e
 set -o pipefail
 
+export PATH="$PATH:/usr/local/bin"
+
 JIRA_NAMESPACE=\$1
 JIRA_ISSUE_KEY=\$2
 JIRA_USERNAME=\$3
