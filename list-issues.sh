@@ -28,7 +28,7 @@ function ls_issues() {
 	curl \
 		-fsSL \
 		-u "${JIRA_USERNAME}:${JIRA_API_KEY}" \
-		https://${JIRA_NAMESPACE}.atlassian.net/rest/api/3/search\?jql\=`echo "project = ${JIRA_PROJECT} AND (fixVersion IS EMPTY OR fixVersion IN unreleasedVersions()) AND status = '${1}' ORDER BY updated DESC" | sed 's/ /%20/'g` \
+		https://${JIRA_NAMESPACE}.atlassian.net/rest/api/3/search\?jql\=`echo "project = ${JIRA_PROJECT} AND (fixVersion IS EMPTY OR fixVersion IN unreleasedVersions()) AND status = '${1}' ORDER BY rank" | sed 's/ /%20/'g` \
 		| jq -c '.issues[]' \
 		| while read row; do
 		echo "$row" | jq -r "\":$2: [\(.key)] \(.fields.summary) (\(.duedate)) | href=https://${JIRA_NAMESPACE}.atlassian.net/browse/\(.key)\""
