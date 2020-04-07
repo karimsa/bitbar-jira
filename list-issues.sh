@@ -78,4 +78,6 @@ echo "---"
 boardID=`curl -fsSL -u "${JIRA_USERNAME}:${JIRA_API_KEY}" https://${JIRA_NAMESPACE}.atlassian.net/rest/agile/1.0/board | jq -r ".values[] | select(.location.projectKey == \"${JIRA_PROJECT}\") | .id"`
 echo "Visit board | href=https://${JIRA_NAMESPACE}.atlassian.net/secure/RapidBoard.jspa?rapidView=${boardID}"
 echo "Releases | href=https://${JIRA_NAMESPACE}.atlassian.net/projects/${JIRA_PROJECT}?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page"
+echo "Roadmap | href=https://${JIRA_NAMESPACE}.atlassian.net/jira/software/projects/${JIRA_PROJECT}/boards/${boardID}/roadmap"
 echo "Refresh Issues | terminal=false refresh=true"
+
