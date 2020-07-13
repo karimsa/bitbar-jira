@@ -25,16 +25,19 @@ echo "JIRA / $JIRA_PROJECT"
 echo "---"
 
 function ls_issues() {
+	tmp=`mktemp`
 	curl \
 		-fsSL \
 		-u "${JIRA_USERNAME}:${JIRA_API_KEY}" \
 		https://${JIRA_NAMESPACE}.atlassian.net/rest/api/3/search\?jql\=`echo "project = ${JIRA_PROJECT} AND (fixVersion IS EMPTY OR fixVersion IN unreleasedVersions()) AND status = '${1}' ORDER BY rank" | sed 's/ /%20/'g` \
-		| jq -c '.issues[]' \
-		| while read row; do
-		echo "$row" | jq -r "\":$2: [\(.key)] \(.fields.summary) (\(.duedate)) | href=https://${JIRA_NAMESPACE}.atlassian.net/browse/\(.key)\""
+		| jq -c '.issues[]' > "$tmp"
+
+	n=$[0+`cat $tmp | wc -l`]
+	for ((i=1;i<=$n;i++)); do
+		cat $tmp | head -n $i | tail -n 1 | jq -r "\":$2: [\(.key)] \(.fields.summary) (\(.duedate)) | href=https://${JIRA_NAMESPACE}.atlassian.net/browse/\(.key)\""
 
 		echo "Backlog,Selected for Development,In Progress,Done," | while read -d, status; do
-			echo "--Move to $status | bash=$HOME/.bitbar-jira.sh param1=$JIRA_NAMESPACE param2=`echo "$row" | jq -r .key` param3=$JIRA_USERNAME param4=$JIRA_API_KEY param5='$status' terminal=false"
+			echo "--Move to $status | bash=$HOME/.bitbar-jira.sh param1=$JIRA_NAMESPACE param2=`cat $tmp | head -n $i | tail -n 1 | jq -r .key` param3=$JIRA_USERNAME param4=$JIRA_API_KEY param5='$status' terminal=false"
 		done
 	done
 }
@@ -80,4 +83,3 @@ echo "Visit board | href=https://${JIRA_NAMESPACE}.atlassian.net/secure/RapidBoa
 echo "Releases | href=https://${JIRA_NAMESPACE}.atlassian.net/projects/${JIRA_PROJECT}?selectedItem=com.atlassian.jira.jira-projects-plugin:release-page"
 echo "Roadmap | href=https://${JIRA_NAMESPACE}.atlassian.net/jira/software/projects/${JIRA_PROJECT}/boards/${boardID}/roadmap"
 echo "Refresh Issues | terminal=false refresh=true"
-
